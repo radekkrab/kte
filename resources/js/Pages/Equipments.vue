@@ -1,4 +1,48 @@
 <script setup>
+import { ref } from 'vue';
+import { reactive } from 'vue';
+import { onMounted } from 'vue';
+import AddProduct from '@/Components/AddProduct.vue';
+import ViewProducts from '@/Components/ViewProducts.vue';
+
+
+let equipments = ref([]);
+
+    onMounted(() => {
+        getEquipments(); 
+        
+})
+
+function getEquipments() {
+  axios.get(`/api/equipment`)
+                .then(res => {
+                    equipments.value = res.data.data;
+                    linkFirst = res.data.links.first;
+                    linkLast = res.data.links.last;
+                    linkNext = res.data.links.next;
+                    linkPrev = res.data.links.prev;
+                })
+}
+
+let linkFirst = '';
+
+let linkLast = '';
+
+let linkNext = '';
+
+let linkPrev = '';
+
+function getLink(link) {
+  axios.get(`${link}`)
+                .then(res => {
+                    equipments.value = res.data.data;
+                    linkFirst = res.data.links.first;
+                    linkLast = res.data.links.last;
+                    res.data.links.next == null ? false : linkNext = res.data.links.next;
+                    res.data.links.prev == null ? false : linkPrev = res.data.links.prev;
+                })
+}
+
 
 </script>
 
@@ -9,7 +53,7 @@
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-10 h-10 text-white p-2 bg-indigo-500 rounded-full" viewBox="0 0 24 24">
         <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
       </svg>
-      <span class="ml-3 text-xl">Tailblocks</span>
+      <span class="ml-3 text-xl">KTE Radekkrab Edition</span>
     </a>
     <nav class="md:mr-auto md:ml-4 md:py-1 md:pl-4 md:border-l md:border-gray-400	flex flex-wrap items-center text-base justify-center">
       <a class="mr-5 hover:text-gray-900">First Link</a>
@@ -25,23 +69,33 @@
   </div>
 </header>
 
-<section class="text-gray-600 body-font">
-  <div class="container mx-auto flex px-5 py-24 md:flex-row flex-col items-center">
-    <div class="lg:max-w-lg lg:w-full md:w-1/2 w-5/6 mb-10 md:mb-0">
-      <img class="object-cover object-center rounded" alt="hero" src="https://dummyimage.com/720x600">
-    </div>
-    <div class="lg:flex-grow md:w-1/2 lg:pl-24 md:pl-16 flex flex-col md:items-start md:text-left items-center text-center">
-      <h1 class="title-font sm:text-4xl text-3xl mb-4 font-medium text-gray-900">Before they sold out
-        <br class="hidden lg:inline-block">readymade gluten
-      </h1>
-      <p class="mb-8 leading-relaxed">Copper mug try-hard pitchfork pour-over freegan heirloom neutra air plant cold-pressed tacos poke beard tote bag. Heirloom echo park mlkshk tote bag selvage hot chicken authentic tumeric truffaut hexagon try-hard chambray.</p>
-      <div class="flex justify-center">
-        <button class="inline-flex text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded text-lg">Button</button>
-        <button class="ml-4 inline-flex text-gray-700 bg-gray-100 border-0 py-2 px-6 focus:outline-none hover:bg-gray-200 rounded text-lg">Button</button>
-      </div>
-    </div>
-  </div>
-</section>
+<div class="container mx-auto flex flex-wrap gap-10 p-5 flex-col md:flex-row items-center bg-[#F2F6FA]">
+  <div>
+    <table class="font-roboto table-auto text-left text-[#6E6E6F]">
+      <tr class="border-b-2 border-gray-300">
+        <td class="py-3 pl-4 w-20">№</td>
+        <td class="w-64">ТИП ОБОРУДОВАНИЯ</td>
+        <td class="w-64">СЕРИЙНЫЙ НОМЕР</td>
+        <td class="w-64">ПРИМЕЧАНИЕ</td>
+     </tr>
+     <ViewProducts v-for="equipment in equipments" :equipment="equipment" @sendshowOPM="getEquipments"/>
+            
+  </table> 
+  <div class="flex mt-5 gap-3">
+      <button @click="getLink(linkFirst)" class="inline-flex items-center bg-gray-300 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Начало 
+    </button>
+    <button @click="getLink(linkPrev)" class="inline-flex items-center bg-gray-300 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">< Назад
+    </button>
+    <button @click="getLink(linkNext)" class="inline-flex items-center bg-gray-300 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Далее >
+     </button>
+     <button @click="getLink(linkLast)" class="inline-flex items-center bg-gray-300 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Последняя
+     </button>
+    </div></div>
+   
+  
+  
+     <div class="button pr-2 lg:pr-4 self-end lg:self-start"><AddProduct @sendshowOPM="getEquipments"/></div>
+</div>
 
 <footer class="text-gray-600 body-font">
   <div class="container px-5 py-24 mx-auto flex md:items-center lg:items-start md:flex-row md:flex-nowrap flex-wrap flex-col">
@@ -50,7 +104,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-10 h-10 text-white p-2 bg-indigo-500 rounded-full" viewBox="0 0 24 24">
           <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
         </svg>
-        <span class="ml-3 text-xl">Tailblocks</span>
+        <span class="ml-3 text-xl">KTE Radekkrab Edition</span>
       </a>
       <p class="mt-2 text-sm text-gray-500">Air plant banjo lyft occupy retro adaptogen indego</p>
     </div>
@@ -127,8 +181,8 @@
   </div>
   <div class="bg-gray-100">
     <div class="container mx-auto py-4 px-5 flex flex-wrap flex-col sm:flex-row">
-      <p class="text-gray-500 text-sm text-center sm:text-left">© 2020 Tailblocks —
-        <a href="https://twitter.com/knyttneve" rel="noopener noreferrer" class="text-gray-600 ml-1" target="_blank">@knyttneve</a>
+      <p class="text-gray-500 text-sm text-center sm:text-left">© 2024 KTE Radekkrab Edition —
+        <a href="https://twitter.com/knyttneve" rel="noopener noreferrer" class="text-gray-600 ml-1" target="_blank">@radekkrab</a>
       </p>
       <span class="inline-flex sm:ml-auto sm:mt-0 mt-2 justify-center sm:justify-start">
         <a class="text-gray-500">
