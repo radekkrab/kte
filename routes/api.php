@@ -14,4 +14,6 @@ Route::get('/equipment', [\App\Http\Controllers\Api\EquipmentController::class, 
 
 Route::delete('/equipment/{id}', [\App\Http\Controllers\Api\EquipmentController::class, 'destroy']);
 
+Route::put('/equipment/{id}', [\App\Http\Controllers\Api\EquipmentController::class, 'update']);
+
 Route::get('/equipment-type', [\App\Http\Controllers\Api\EquipmentTypeController::class, 'index']);

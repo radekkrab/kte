@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\SerialNumber;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreEquipmentRequest extends FormRequest
@@ -24,7 +25,7 @@ class StoreEquipmentRequest extends FormRequest
         return [
             '*' => 'array',
             '*.equipment_type_id' => 'required|integer|exists:equipment_types,id',
-            '*.sn' => 'required|string|unique:equipment,sn',
+            '*.sn' => ['required', 'string', 'unique:equipment,sn', new SerialNumber($this->input('*.equipment_type_id'))],
             '*.comment' => 'string|nullable',
         ];
     }

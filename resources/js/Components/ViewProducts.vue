@@ -1,7 +1,7 @@
 <script setup>
 
     import { ref } from 'vue';
-    import { onMounted } from 'vue'
+    import { onMounted } from 'vue';
     import { reactive } from 'vue';
     import Modal from '@/Components/Modal.vue';
     import { Link } from '@inertiajs/vue3'
@@ -13,12 +13,8 @@
     const props = defineProps({showOpenProductModal: Boolean, equipment: Object});
 
     const showOpenProductModal = ref(false);
- 
-  
-    let view = null;
-
+     
     const openProductModal = (props) => {
-      props.equipment = props;
       showOpenProductModal.value = true;
     }
 
@@ -58,7 +54,7 @@
             <div class="flex mb-4 justify-between">
                 <div class="h2 font-semibold text-[22px] uppercase">ID оборудования {{ props.equipment.id }}</div>
                 <div class="flex">
-                    <!-- <EditProduct  @sendshowOPM="closeProductModal" :product="{ id: view.id, article: view.article, name: view.name, status: view.status, data: view.data }"/> -->
+                    <EditProduct  @sendshowOPM="closeProductModal" :equipment="props.equipment"/> 
                     <button  @click="destroy(props.equipment.id) & closeProductModal">
                         <img class="self-center lg:w-5 mr-3" src="/img/recycle2.png"></img>
                     </button>

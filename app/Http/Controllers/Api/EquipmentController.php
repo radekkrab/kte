@@ -7,6 +7,7 @@ use App\Models\Equipment;
 use App\Http\Requests\StoreEquipmentRequest;
 use App\Http\Requests\UpdateEquipmentRequest;
 use App\Http\Resources\EquipmentResource;
+use App\Models\EquipmentType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -17,7 +18,7 @@ class EquipmentController extends Controller
      */
     public function index()
     {
-        $equioments = Equipment::paginate(7);
+        $equioments = Equipment::latest()->paginate(7);
 
         return EquipmentResource::collection($equioments);
     }
@@ -45,9 +46,20 @@ class EquipmentController extends Controller
         
         $success = [];
 
+
         foreach($validated as $item) {
 
-            $success[] = $item;
+            $equipment = Equipment::create([
+                'equipment_type_id' => $item['equipment_type_id'],
+                'sn' => $item['sn'],
+                'comment' => $item['comment'] ?? null,
+            ]);
+
+            $success[] = new EquipmentResource(
+                $equipment->load([
+                    'equipmentType',
+                ])
+            );
         }
 
         $errors = (object)[];
@@ -85,9 +97,50 @@ class EquipmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEquipmentRequest $request, Equipment $equipment)
+    public function update(Request $request, string $id)
     {
-        //
+        $equipmentU = new UpdateEquipmentRequest($request->data);
+
+        $validator = Validator::make($request->data, $equipmentU->rules());
+
+        $errorsRequest = $validator->errors();
+        $validated = $validator->valid();
+        
+        $success = [];
+
+
+        foreach($validated as $item) {
+
+            $equipment = Equipment::where('id', $id)->update([
+                'equipment_type_id' => $item['equipment_type_id'],
+                'sn' => $item['sn'],
+                'comment' => $item['comment'] ?? null,
+            ]);
+
+            $updatedEquipment = Equipment::find($id);
+
+            $success[] = new EquipmentResource(
+                $updatedEquipment->load('equipmentType')
+            );
+        }
+
+        $errors = (object)[];
+
+        
+        foreach($errorsRequest->messages() as $ue_key=>$ue_val) {
+            
+            $arr_key = explode('.', $ue_key);
+            
+            $key = $arr_key[0];
+            $val = $arr_key[1];
+
+            $errors->{$key}[] = str_replace($ue_key, $val, $ue_val[0]);
+        }
+
+        return response()->json((object)[
+            'errors' => $errors,
+            'success' => $success,
+        ]);
     }
 
     /**
