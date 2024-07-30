@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Filters\EquipmentFilter;
+use App\Http\Requests\FilterRequest;
 use App\Models\Equipment;
 use App\Http\Requests\StoreEquipmentRequest;
 use App\Http\Requests\UpdateEquipmentRequest;
@@ -16,10 +18,17 @@ class EquipmentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(FilterRequest $request)
     {
-        $equioments = Equipment::latest()->paginate(7);
-
+        
+        if ($request) {
+            $data = $request->validated();
+            $filter = app()->make(EquipmentFilter::class, ['queryParams' => array_filter($data)]);
+            $equioments = Equipment::filter($filter)->paginate(7);
+        } else {
+            $equioments = Equipment::latest()->paginate(7);
+        }      
+        
         return EquipmentResource::collection($equioments);
     }
 

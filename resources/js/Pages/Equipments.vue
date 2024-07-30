@@ -13,15 +13,26 @@ let equipments = ref([]);
         
 })
 
-function getEquipments() {
-  axios.get(`/api/equipment`)
-                .then(res => {
-                    equipments.value = res.data.data;
-                    linkFirst = res.data.links.first;
-                    linkLast = res.data.links.last;
-                    linkNext = res.data.links.next;
-                    linkPrev = res.data.links.prev;
-                })
+function getEquipments(comment = null, sn = null) {
+  let url = '/api/equipment';
+  let queryParams = new URLSearchParams();
+  if (comment) {
+    queryParams.append('comment', comment);
+  }
+  if (sn) {
+    queryParams.append('sn', sn);
+  }
+  if (queryParams.toString()) {
+    url += `?${queryParams.toString()}`;
+  }
+  axios.get(url)
+    .then(res => {
+      equipments.value = res.data.data;
+      linkFirst = res.data.links.first;
+      linkLast = res.data.links.last;
+      linkNext = res.data.links.next;
+      linkPrev = res.data.links.prev;
+    })
 }
 
 let linkFirst = '';
@@ -41,6 +52,12 @@ function getLink(link) {
                     res.data.links.next == null ? false : linkNext = res.data.links.next;
                     res.data.links.prev == null ? false : linkPrev = res.data.links.prev;
                 })
+}
+
+function checkInputLength(value) {
+  if (value.length >= 10) {
+    getEquipments(null, value)
+  }
 }
 
 
@@ -77,6 +94,12 @@ function getLink(link) {
         <td class="w-64">ТИП ОБОРУДОВАНИЯ</td>
         <td class="w-64">СЕРИЙНЫЙ НОМЕР</td>
         <td class="w-64">ПРИМЕЧАНИЕ</td>
+     </tr>
+     <tr>
+        <td class="py-3 pl-4 w-20"></td>
+        <td class="w-64 text-xl">Для поиска <br>введите текст в поле →</td>
+        <td class="w-64 py-3 h-14"><input @input="checkInputLength($event.target.value)" minlength="10" class="h-10 px-1" type="text" placeholder="поиск по серийному"></td>
+        <td class="w-64 py-3 h-14"><input @input="getEquipments($event.target.value, null)" class="h-10 px-1" type="text" placeholder="поиск по примечанию"></td>
      </tr>
      <ViewProducts v-for="equipment in equipments" :equipment="equipment" @sendshowOPM="getEquipments"/>
             
