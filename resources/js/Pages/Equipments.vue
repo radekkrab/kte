@@ -98,7 +98,7 @@ function checkInputLength(value) {
      <tr>
         <td class="py-3 pl-4 w-20"></td>
         <td class="w-64 text-xl">Для поиска <br>введите текст в поле →</td>
-        <td class="w-64 py-3 h-14"><input @input="checkInputLength($event.target.value)" minlength="10" class="h-10 px-1" type="text" placeholder="поиск по серийному"></td>
+        <td class="w-64 py-3 h-14"><input @input="checkInputLength($event.target.value)" minlength="10" maxlength="10" class="h-10 px-1" type="text" placeholder="поиск по серийному"></td>
         <td class="w-64 py-3 h-14"><input @input="getEquipments($event.target.value, null)" class="h-10 px-1" type="text" placeholder="поиск по примечанию"></td>
      </tr>
      <ViewProducts v-for="equipment in equipments" :equipment="equipment" @sendshowOPM="getEquipments"/>

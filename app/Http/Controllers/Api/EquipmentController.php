@@ -24,12 +24,12 @@ class EquipmentController extends Controller
         if ($request) {
             $data = $request->validated();
             $filter = app()->make(EquipmentFilter::class, ['queryParams' => array_filter($data)]);
-            $equioments = Equipment::filter($filter)->paginate(7);
+            $equipments = Equipment::filter($filter)->paginate(7);
         } else {
-            $equioments = Equipment::latest()->paginate(7);
+            $equipments = Equipment::latest()->paginate(7);
         }      
         
-        return EquipmentResource::collection($equioments);
+        return EquipmentResource::collection($equipments);
     }
 
     /**
@@ -92,7 +92,7 @@ class EquipmentController extends Controller
      */
     public function show(Equipment $equipment)
     {
-        //
+        return new EquipmentResource($equipment);  
     }
 
     /**
@@ -106,59 +106,18 @@ class EquipmentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateEquipmentRequest $request, Equipment $equipment)
     {
-        $equipmentU = new UpdateEquipmentRequest($request->data);
+        $equipment->update($request->all());
 
-        $validator = Validator::make($request->data, $equipmentU->rules());
-
-        $errorsRequest = $validator->errors();
-        $validated = $validator->valid();
-        
-        $success = [];
-
-
-        foreach($validated as $item) {
-
-            $equipment = Equipment::where('id', $id)->update([
-                'equipment_type_id' => $item['equipment_type_id'],
-                'sn' => $item['sn'],
-                'comment' => $item['comment'] ?? null,
-            ]);
-
-            $updatedEquipment = Equipment::find($id);
-
-            $success[] = new EquipmentResource(
-                $updatedEquipment->load('equipmentType')
-            );
-        }
-
-        $errors = (object)[];
-
-        
-        foreach($errorsRequest->messages() as $ue_key=>$ue_val) {
-            
-            $arr_key = explode('.', $ue_key);
-            
-            $key = $arr_key[0];
-            $val = $arr_key[1];
-
-            $errors->{$key}[] = str_replace($ue_key, $val, $ue_val[0]);
-        }
-
-        return response()->json((object)[
-            'errors' => $errors,
-            'success' => $success,
-        ]);
+        return new EquipmentResource($equipment);  
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Equipment $equipment)
     {
-        $equipment = Equipment::find($id);
-
         $equipment->delete();   
 
         return new EquipmentResource($equipment);

@@ -2,6 +2,7 @@
 
 namespace App\Rules;
 
+use App\Models\Equipment;
 use App\Models\EquipmentType;
 use Closure;
 use Illuminate\Contracts\Validation\DataAwareRule;
@@ -53,6 +54,10 @@ class SerialNumber implements DataAwareRule, ValidationRule
         $regexp = $this->getRegexp($this->mask["masksn"]);
         if (!preg_match('/' . $regexp . '/', $value)) {
             $fail('The :attribute must match the specified pattern.');
+        }
+
+        if (Equipment::where('equipment_type_id', $this->equipment_type_id["equipment_type_id"])->where('sn', $value)->exists()) {
+            $fail('The :attribute must be unique within the specified equipment type.');
         }
     }
 }

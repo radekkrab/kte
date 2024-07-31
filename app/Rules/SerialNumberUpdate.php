@@ -2,6 +2,7 @@
 
 namespace App\Rules;
 
+use App\Models\Equipment;
 use App\Models\EquipmentType;
 use Closure;
 use Illuminate\Contracts\Validation\DataAwareRule;
@@ -20,8 +21,8 @@ class SerialNumberUpdate implements DataAwareRule, ValidationRule
      */
     public function setData(array $data): static
     {
-        $this->equipment_type_id = $data[0];
- 
+        $this->equipment_type_id = $data;
+
         return $this;
     }
     
@@ -49,10 +50,14 @@ class SerialNumberUpdate implements DataAwareRule, ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {  
-        $this->mask = EquipmentType::find($this->equipment_type_id["equipment_type_id"]);
+        $this->mask = EquipmentType::find($this->equipment_type_id["data"]["equipment_type_id"]);
         $regexp = $this->getRegexp($this->mask["masksn"]);
         if (!preg_match('/' . $regexp . '/', $value)) {
             $fail('The :attribute must match the specified pattern.');
+        }
+
+        if (Equipment::where('equipment_type_id', $this->equipment_type_id["data"]["equipment_type_id"])->where('sn', $value)->exists()) {
+            $fail('The :attribute must be unique within the specified equipment type.');
         }
     }
 }

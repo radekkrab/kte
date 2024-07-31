@@ -38,7 +38,7 @@ let equipmentsStor = form.equipmentsStor;
 
 function update(id) {
          console.log(form.equipmentf); 
-         axios.put(`/api/equipment/${id}`, { data: [form] } )
+         axios.put(`/api/equipment/${id}`, { data: form } )
                 .then(res => {
                  closeEditModal()
                 })

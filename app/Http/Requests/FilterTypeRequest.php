@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use App\Rules\SerialNumber;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreEquipmentRequest extends FormRequest
+class FilterTypeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,10 +23,9 @@ class StoreEquipmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            '*' => 'array',
-            '*.equipment_type_id' => 'required|integer|exists:equipment_types,id',
-            '*.sn' => ['required', 'string', 'max:10', new SerialNumber($this->input('*.equipment_type_id'))],
-            '*.comment' => 'string|nullable',
+            'id' => 'integer',
+            'name' => 'string',
+            'masksn' => 'string',
         ];
     }
 }
