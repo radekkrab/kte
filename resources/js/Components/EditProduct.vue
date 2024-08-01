@@ -25,30 +25,27 @@ const closeEditModal = () => {
 
 const form = useForm({
     
-        equipment_type_id: props.equipment.equipment_type.id,
-        equipment_type: props.equipment.equipment_type,
-        sn: props.equipment.sn,
-        comment: props.equipment.comment
+        equipment_type_id: ref(),
+        equipment_type: ref(props.equipment.equipment_type),
+        sn: ref(props.equipment.sn),
+        comment: ref(props.equipment.comment)
     
 })
 
 
-
-let equipmentsStor = form.equipmentsStor;
-
 function update(id) {
-         console.log(form.equipmentf); 
+         form.equipment_type_id = form.equipment_type.id;
          axios.put(`/api/equipment/${id}`, { data: form } )
                 .then(res => {
                  closeEditModal()
                 })
             .catch( e => {
                 console.log(e);
-                
+                closeEditModal()
             })
         }
 
-        let equipmentTypes = ref([]);
+let equipmentTypes = ref([]);
 
 let errors = ref([]);
 
@@ -62,8 +59,6 @@ function getEquipmentTypes() {
                 .then(res => {
                     equipmentTypes.value = res.data;
                     console.log(equipmentTypes);
-                    
-        form.equipmentf = props.equipment;
                 })
 }
 

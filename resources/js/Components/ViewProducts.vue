@@ -12,6 +12,7 @@
 
     const props = defineProps({showOpenProductModal: Boolean, equipment: Object});
 
+
     const showOpenProductModal = ref(false);
      
     const openProductModal = (props) => {
@@ -25,7 +26,7 @@
  
     const emit = defineEmits(['sendshowOPM']);
 
-    const showOPM = true;
+    const showOPM = false;
 
     function destroy(id) {
             console.log(id);

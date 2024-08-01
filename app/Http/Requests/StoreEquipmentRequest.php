@@ -25,7 +25,7 @@ class StoreEquipmentRequest extends FormRequest
         return [
             '*' => 'array',
             '*.equipment_type_id' => 'required|integer|exists:equipment_types,id',
-            '*.sn' => ['required', 'string', 'max:10', new SerialNumber($this->input('*.equipment_type_id'))],
+            '*.sn' => ['required', 'string', new SerialNumber($this->input('*.equipment_type_id'))],
             '*.comment' => 'string|nullable',
         ];
     }

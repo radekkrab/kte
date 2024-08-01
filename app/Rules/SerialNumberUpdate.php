@@ -50,14 +50,23 @@ class SerialNumberUpdate implements DataAwareRule, ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {  
+        
+
         $this->mask = EquipmentType::find($this->equipment_type_id["data"]["equipment_type_id"]);
+
+        if (strlen($value) !== strlen($this->mask["masksn"])) {
+                    $fail('The :attribute must have a length of ' . strlen($this->mask["masksn"]) . ' characters.');
+                }
+             
+
         $regexp = $this->getRegexp($this->mask["masksn"]);
         if (!preg_match('/' . $regexp . '/', $value)) {
             $fail('The :attribute must match the specified pattern.');
         }
-
-        if (Equipment::where('equipment_type_id', $this->equipment_type_id["data"]["equipment_type_id"])->where('sn', $value)->exists()) {
-            $fail('The :attribute must be unique within the specified equipment type.');
-        }
+        
+        
+        // if (Equipment::where('equipment_type_id', $this->equipment_type_id["data"]["equipment_type_id"])->where('sn', $value)->exists()) {
+        //     $fail('The :attribute must be unique within the specified equipment type.');
+        // }
     }
 }

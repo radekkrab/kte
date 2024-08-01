@@ -108,7 +108,8 @@ class EquipmentController extends Controller
      */
     public function update(UpdateEquipmentRequest $request, Equipment $equipment)
     {
-        $equipment->update($request->all());
+        
+        $equipment->update($request->data);
 
         return new EquipmentResource($equipment);  
     }

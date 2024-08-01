@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('equipment', function (Blueprint $table) {
+            $table->dropUnique('equipment_sn_unique');
             $table->unique(['equipment_type_id', 'sn']);
         });
     }
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('equipment', function (Blueprint $table) {
             $table->dropUnique(['equipment_type_id', 'sn']);
+            $table->unique('sn');
         });
     }
 };

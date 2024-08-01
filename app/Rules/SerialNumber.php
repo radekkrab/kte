@@ -52,6 +52,11 @@ class SerialNumber implements DataAwareRule, ValidationRule
     {  
         $this->mask = EquipmentType::find($this->equipment_type_id["equipment_type_id"]);
         $regexp = $this->getRegexp($this->mask["masksn"]);
+
+        if (strlen($value) !== strlen($regexp)) {
+            $fail('The :attribute must have a length of ' . strlen($regexp) . ' characters.');
+        }
+
         if (!preg_match('/' . $regexp . '/', $value)) {
             $fail('The :attribute must match the specified pattern.');
         }
